@@ -3,13 +3,14 @@
 
   "name": "Herp Derp+ for YouTube\u2122",
   "description": "Herp Derp, with proportional herps",
-  "version": "1.5",
+  "version": "2.0",
 
   "content_scripts": [
     {
-      "js": [ "jquery.min.js", "herp.js" ],
-      "matches": [ "http://www.youtube.com/*", "http://www.youtu.be/*", "https://www.youtube.com/*", "https://www.youtu.be/*" ],
-      "run_at": "document_end"
+      "js": [ "zepto.min.js", "herp.js" ],
+      "matches": [ "https://apis.google.com/*" ],
+      "run_at": "document_end",
+      "all_frames": true
     }
   ],
 

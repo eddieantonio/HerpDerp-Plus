@@ -1,17 +1,18 @@
-// HerpDerp browser plugin
-// Forked from http://www.tannr.com/herp-derp-youtube-comments/
-// Runs at document end.
+/**
+ * HerpDerp browser plugin
+ * Forked from http://www.tannr.com/herp-derp-youtube-comments/
+ * Runs in the context of the comment iframe widget.
+ */
 
 // Meant to be run with `this` bound to the DOMElement representing the YouTube
 // comment.
 function randomDerp() {
-  var originalText
-    , herpLength
-    , wordArray
-    , self = this
-    , randomBit
-    , i
-    ;
+  var originalText,
+      herpLength,
+      wordArray,
+      self = this,
+      randomBit,
+      i;
 
   // Keep a copy of the original text.
   originalText = $(this).html();
@@ -24,18 +25,15 @@ function randomDerp() {
 
   // This needs fixing. The length has to be proportional to amount of words in
   // the text.
-  var herpLength = originalText.split(/\s+/).length;
-  var wordArray = [];
+  herpLength = originalText.split(/\s+/).length;
+  wordArray = [];
 
   for (i = 0; i < herpLength; i++) {
-    randomBit = Math.floor(Math.random()*2);
-
-    wordArray.push(
-      randomBit ? 'herp' : 'derp'
-    );
+    randomBit = ~~(Math.random() * 2);
+    wordArray.push(randomBit ? 'herp' : 'derp');
   }
 
-  // add derped class
+  // Add derped class.
   $(this).addClass("derped");
 
   // Return the derp'd text.
@@ -46,19 +44,29 @@ function randomDerp() {
 // Define how to derpify.
 function derpify() {
   // Only select un-derped elements.
-  $('.comment-text, p.ctx').not('.derped').html(randomDerp);
-};
+  $('.Ct').not('.derped').html(randomDerp);
+}
 
-// derpify for the first time.
-derpify();
+if (parent === top) {
 
-/*
-// Repeat every once in a while.
-setInterval(derpify , 100);
-*/
+  // derpify for the first time.
+  derpify();
 
-// Derpify when any of these are clicked.
-// It doesn't actually work... but whatever...
-$('yt-uix-pager-button, yt-uix-pager-show-more, comment-action-showparent')
-  .on('click', derpify);
+  var commentBox = document.querySelector('.pga');
+  var observer = new MutationObserver(function (mutations, observer) {
+    mutations.forEach(function (mutation) {
+      if (mutation.addedNodes.length < 1) {
+        return;
+      }
 
+      // Regardless of what was added, derp it!
+      derpify();
+    });
+  });
+
+  observer.observe(commentBox, {
+    childList: true,
+    subtree: true,
+  });
+
+}
