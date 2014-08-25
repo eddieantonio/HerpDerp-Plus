@@ -8,11 +8,12 @@
   "content_scripts": [
     {
       "js": [ "zepto.min.js", "herp.js" ],
-      "matches": [ "https://apis.google.com/*" ],
+      "matches": [ "https://apis.google.com/*", "https://plus.googleapis.com/*" ],
       "run_at": "document_end",
       "all_frames": true
     }
   ],
+
 
    "icons": {
       "128": "herp128.png",

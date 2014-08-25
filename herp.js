@@ -8,19 +8,21 @@
 // comment.
 function randomDerp() {
   var originalText,
+      originalHTML,
       herpLength,
       wordArray,
       self = this,
       randomBit,
       i;
 
-  // Keep a copy of the original text.
-  originalText = $(this).html();
+  // Keep a copy of the original HTML and text.
+  originalHTML = self.innerHTML;
+  originalText = self.innerText;
 
   // Allow a click on the derped text to change it into its original form
   // (unfortunately).
-  $(this).one('click', function () {
-    $(self).html(originalText);
+  $(self).one('click', function () {
+    $(self).html(originalHTML);
   });
 
   // This needs fixing. The length has to be proportional to amount of words in
@@ -33,40 +35,54 @@ function randomDerp() {
     wordArray.push(randomBit ? 'herp' : 'derp');
   }
 
-  // Add derped class.
-  $(this).addClass("derped");
-
-  // Return the derp'd text.
-  return '<p>' + wordArray.join(' ') + '</p>';
-
+  // Derp the text and add derped class.
+  $(self)
+    .text(wordArray.join(' '))
+    .addClass('derped');
 }
 
 // Define how to derpify.
 function derpify() {
-  // Only select un-derped elements.
-  $('.Ct').not('.derped').html(randomDerp);
+  // Do to reasons beyond me, we gotta wait a while until the text actually
+  // appears on the page...
+  setInterval(function () {
+    // Only select un-derped elements.
+    $('.Ct').not('.derped').each(randomDerp);
+  }, 65);
 }
 
-if (parent === top) {
+(function () {
 
-  // derpify for the first time.
   derpify();
 
-  var commentBox = document.querySelector('.pga');
+  var commentRoot = document.querySelector('.pga');
+
+  if (commentRoot === null) {
+    // We might not get a comment root node (for some reason)
+    // so just return in this case.
+    return;
+  }
+
+  // Create an observer that will change underp'd comments.
   var observer = new MutationObserver(function (mutations, observer) {
     mutations.forEach(function (mutation) {
       if (mutation.addedNodes.length < 1) {
         return;
       }
 
-      // Regardless of what was added, derp it!
+      // This observer will also notify us of derping events;
+      // make sure those get ignored.
+      if (mutation.target.classList.contains('derped')) {
+        return;
+      }
+
       derpify();
     });
   });
 
-  observer.observe(commentBox, {
+  observer.observe(commentRoot, {
     childList: true,
     subtree: true,
   });
 
-}
+}());
